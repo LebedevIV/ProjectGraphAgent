@@ -1,0 +1,43 @@
+{
+  "name": "project-graph-agent",
+  "version": "0.1.0-alpha",
+  "description": "Jsonnet-driven project control system for AI agents",
+  "main": "scripts/graph_generator.mjs",
+  "type": "module",
+  "scripts": {
+    "clean": "node scripts/clean_project.mjs",
+    "sync": "node scripts/sync_to_standalone.mjs",
+    "publish": "node scripts/publish_workflow.mjs",
+    "graph:audit": "node scripts/graph_generator.mjs",
+    "graph:validate": "node scripts/graph_validator.mjs",
+    "graph:commit": "node scripts/ai_committer.mjs",
+    "sync:ai-commands": "node scripts/sync_ai_commands.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LebedevIV/ProjectGraphAgent.git"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "project-management",
+    "jsonnet",
+    "graph",
+    "automation",
+    "drift-detection"
+  ],
+  "author": "Igor Lebedev",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/LebedevIV/ProjectGraphAgent/issues"
+  },
+  "homepage": "https://github.com/LebedevIV/ProjectGraphAgent#readme"
+}
