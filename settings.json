@@ -1,0 +1,28 @@
+{
+  "settingsFileMetadata": {
+    "description": "Configuration file for project-specific settings, including AI agent behaviors.",
+    "fileName": "settings.json",
+    "filePath": "project_graph/settings.json"
+  },
+  "options": {
+    "audit_after_commit": {
+      "description": "Automatically run a focused audit on committed files after each `graph:commit` operation.",
+      "value": false
+    },
+    "update_memory_bank_on_audit": {
+      "description": "Log audit results to the memory-bank/audit_logs.md file.",
+      "value": true
+    },
+    "keep_compiled_graph": {
+      "description": "Keep the compiled graph JSON at project_graph/.cache/graph.json after the generator finishes.",
+      "value": true
+    },
+    "audit_exclude_patterns": {
+      "description": "Glob patterns to exclude from audits (applied to POSIX-style relative paths).",
+      "value": [
+        "**/*.map",
+        "**/*.log"
+      ]
+    }
+  }
+}
