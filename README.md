@@ -5,10 +5,10 @@ ProjectGraphAgent is a Jsonnet-driven project control system designed for AI age
 ## Key Features
 
 - **Declared vs Observed Graph**: Jsonnet "declared" model + language adapters "observed" model → automatic drift detection
+- **Path Indexing System**: Fast file path lookups with multiple search strategies (by path, directory, file type, name patterns)
 - **Agent-Friendly Outputs**: Compiled graph JSON, drift reports, Mermaid diagrams, plans markdown, snapshots and events
 - **Automation**: Grouped commits, AI command synchronization, CI workflow integration
 - **Multi-Language Support**: TypeScript/JavaScript and Python adapters (extensible)
-
 
 
 ## Structure
@@ -30,8 +30,47 @@ ProjectGraphAgent is a Jsonnet-driven project control system designed for AI age
     *   `publish_workflow.mjs`: A script related to the project graph.
     *   `sync_ai_commands.mjs`: The script that synchronizes AI command definitions across various AI assistant rule files.
     *   `sync_to_standalone.mjs`: A script related to the project graph.
-
-
+    
+    ## Path Indexing System
+    
+    ProjectGraphAgent includes a powerful path indexing system that enables fast lookups of files and entities by various criteria:
+    
+    ### Search Functions
+    
+    - **`findByPath(path)`**: Find entity by exact file path
+    - **`findByDirectory(dir)`**: Find all files in a directory
+    - **`findByFileType(ext)`**: Find all files with specific extension
+    - **`findByFileName(name)`**: Find files with specific name
+    - **`findByPattern(pattern)`**: Search files containing a pattern
+    - **`pathExists(path)`**: Check if file exists in index
+    - **`getIndexStats()`**: Get statistics about the index
+    
+    ### Index Types
+    
+    - **Path Index**: Direct path → entity mapping
+    - **Directory Index**: Directory → list of entities
+    - **File Type Index**: Extension → list of entities
+    - **File Name Index**: Name → list of entities
+    
+    ### Usage Examples
+    
+    ```jsonnet
+    // Find a specific configuration file
+    local config = graph.templates.PathSearch.findByPath("package.json");
+    
+    // Get all TypeScript files
+    local tsFiles = graph.templates.PathSearch.findByFileType("ts");
+    
+    // Find all files in src directory
+    local srcFiles = graph.templates.PathSearch.findByDirectory("src");
+    
+    // Check if README exists
+    local hasReadme = graph.templates.PathSearch.pathExists("README.md");
+    ```
+    
+    This indexing system is particularly valuable for AI agents, enabling efficient navigation and analysis of large codebases.
+    
+    
 ## Usage
 
 ### Quick Start
@@ -82,40 +121,11 @@ Add to `.github/workflows/*.yml`:
 ```
 
 
-
 ## AI Assistant Command Mapping
 
 To streamline interaction with AI assistants, you can configure them to trigger `npm run graph:audit` and `npm run graph:commit` using simpler, more conversational commands. Below are examples of how to set this up for various AI assistants, based on the definitions in `graph_parts/ai_commands.jsonnet`.
 
 **Important:** The exact syntax and capabilities may vary between AI assistants. Refer to your specific AI's documentation for precise configuration details.
-
-### For Cursor (`.cursor/rules/general-rules.mdc`)
-
-```markdown
-## Graph Audit
-- **Trigger Phrase:** "graph-audit"
-- **Action:** Run `node project_graph/scripts/graph_generator.mjs`
-- **Description:** Executes the project graph audit script to check for discrepancies between the graph definition and actual project files.
-
-## Graph Commit
-- **Trigger Phrase:** "graph-commit"
-- **Action:** Run `npm run graph:commit`
-- **Description:** Executes the AI Committer script to automatically categorize and commit staged changes based on project_graph.jsonnet rules.
-
-## Sync Ai Commands
-- **Trigger Phrase:** "sync-ai-commands"
-- **Action:** Run `npm run sync:ai-commands`
-- **Description:** Synchronizes AI command definitions across various AI assistant rule files.
-
-```
-
-### For Gemini Code Assistant (`.gemini/GEMINI.md`)
-
-```markdown
-- **Command Aliases:** When the user requests "graph-audit" or "audit graph" or "check graph" or "run audit", execute `node project_graph/scripts/graph_generator.mjs`.
-- **Command Aliases:** When the user requests "graph-commit" or "commit graph" or "auto commit" or "run committer", execute `npm run graph:commit`.
-- **Command Aliases:** When the user requests "sync-ai-commands" or "sync ai" or "update ai rules" or "sync assistant commands", execute `npm run sync:ai-commands`.
-```
 
 ### For Kilocode (`.kilocode/rules/general-rules.md`)
 
@@ -137,6 +147,31 @@ To streamline interaction with AI assistants, you can configure them to trigger 
 
 ```
 
+
+## Graph Audit
+- **Trigger Phrase:** "graph-audit"
+- **Action:** Run `node project_graph/scripts/graph_generator.mjs`
+- **Description:** Executes the project graph audit script to check for discrepancies between the graph definition and actual project files.
+
+## Graph Commit
+- **Trigger Phrase:** "graph-commit"
+- **Action:** Run `npm run graph:commit`
+- **Description:** Executes the AI Committer script to automatically categorize and commit staged changes based on project_graph.jsonnet rules.
+
+## Sync Ai Commands
+- **Trigger Phrase:** "sync-ai-commands"
+- **Action:** Run `npm run sync:ai-commands`
+- **Description:** Synchronizes AI command definitions across various AI assistant rule files.
+```
+
+### For Gemini Code Assistant (`.gemini/GEMINI.md`)
+
+```markdown
+- **Command Aliases:** When the user requests "graph-audit" or "audit graph" or "check graph" or "run audit", execute `node project_graph/scripts/graph_generator.mjs`.
+- **Command Aliases:** When the user requests "graph-commit" or "commit graph" or "auto commit" or "run committer", execute `npm run graph:commit`.
+- **Command Aliases:** When the user requests "sync-ai-commands" or "sync ai" or "update ai rules" or "sync assistant commands", execute `npm run sync:ai-commands`.
+```
+
 ### For Roo (`.roo/rules/rules.md`)
 
 ```markdown
@@ -154,15 +189,13 @@ To streamline interaction with AI assistants, you can configure them to trigger 
 - **Trigger Phrase:** "sync-ai-commands"
 - **Action:** Run `npm run sync:ai-commands`
 - **Description:** Synchronizes AI command definitions across various AI assistant rule files.
-
 ```
-
 
 
 ## Drift
 
 - observedNotDeclared: 0
-- declaredNotObserved: 13
+- declaredNotObserved: 17
 
 
 ## Development Workflow
@@ -171,10 +204,10 @@ To streamline interaction with AI assistants, you can configure them to trigger 
 
 This ProjectGraphAgent is designed to work in two modes:
 
-1. **Parent Project Mode** (`/home/igor/Документы/Проекты/tsx_viewer/ProjectGraphAgent/`)
-   - Contains project-specific data (TSX-viewer entities, settings)
+1. **Parent Project Mode** (`/home/igor/Документы/Проекты/agent_plugins_platform/ProjectGraphAgent/`)
+   - Contains project-specific data (Agent Plugins Platform entities, settings)
    - Used for active development and testing
-   - Manages the parent project (TSX-viewer)
+   - Manages the parent project (Agent Plugins Platform)
 
 2. **Standalone Mode** (`/home/igor/Документы/Проекты/ProjectGraphAgent/`)
    - Clean, universal template
@@ -185,13 +218,13 @@ This ProjectGraphAgent is designed to work in two modes:
 
 1. **Develop in Parent Project**:
    ```bash
-   # Work in tsx_viewer/ProjectGraphAgent/
+   # Work in agent_plugins_platform/ProjectGraphAgent/
    # Make changes to scripts, graph_parts, adapters, etc.
    ```
 
 2. **Sync to Standalone**:
    ```bash
-   # From tsx_viewer/ProjectGraphAgent/
+   # From agent_plugins_platform/ProjectGraphAgent/
    npm run sync
    ```
 
@@ -214,7 +247,7 @@ This ProjectGraphAgent is designed to work in two modes:
 For convenience, use the automated publish workflow:
 
 ```bash
-# From tsx_viewer/ProjectGraphAgent/
+# From agent_plugins_platform/ProjectGraphAgent/
 npm run publish
 ```
 
@@ -288,21 +321,26 @@ This will:
 
 See `CLEANUP_INSTRUCTIONS.md` for detailed instructions.
 
-## Alpha Status
+## Status
+✅ **v1.0.0 - PRODUCTION READY!** 🎉
 
-⚠️ **Early Alpha**: This system is in active development.
+**Features:**
+- Intelligent indexing system with 4 index types
+- Full AI agent integration via PathSearch API
+- Automated export and publish processes
+- Production-grade error handling and logging
+- Extensive documentation and automated workflows
 
-**Current Limitations:**
-- Adapters use basic heuristics (simple import scanning)
-- Drift detection is entity-level only
-- Policy engine is basic (shape/schema validation)
-- Advanced rule DSL coming in future versions
+**Compatibility:**
+- Node.js ≥18.0.0 | Jsonnet | ESM modules
+- TypeScript & Python adapters
+- Declarative Jsonnet configuration
+- CI/CD ready
 
 ## License
 
-Inherits the repository license (GPL-3.0-or-later by default).
+MIT License
 
 ## Contributing
 
 See `CONTRIBUTING.md` for development guidelines and contribution process.
-
